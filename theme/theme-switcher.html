@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MKA — Theme Switcher</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+/* ── THEMES DATA ── */
+:root {
+  --t1: #00f5d4; --t2: #ff2d78; --t3: #00ffcc; --t4: #f0c040;
+}
+
+body {
+  background: #030008;
+  font-family: 'Outfit', sans-serif;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── TOP BAR ── */
+#topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 52px;
+  background: rgba(0,0,0,.85);
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  backdrop-filter: blur(30px);
+  flex-shrink: 0;
+  z-index: 100;
+}
+
+.logo {
+  font-family: 'Space Mono', monospace;
+  font-size: .7rem;
+  color: rgba(255,255,255,.3);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+.logo span { color: rgba(255,255,255,.7); }
+
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 18px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: rgba(255,255,255,.35);
+  font-family: 'Space Mono', monospace;
+  font-size: .65rem;
+  letter-spacing: .08em;
+  cursor: pointer;
+  transition: all .25s ease;
+  position: relative;
+}
+.tab .icon { font-size: .9rem; }
+.tab .dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  flex-shrink: 0; transition: box-shadow .3s;
+}
+
+.tab:hover { color: rgba(255,255,255,.7); background: rgba(255,255,255,.05); }
+.tab.active { color: #fff; background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.12); }
+.tab.active .dot { box-shadow: 0 0 8px 2px var(--dot-color, #fff); }
+
+/* Per-theme dot colors */
+.tab[data-theme="1"] { --dot-color: var(--t1); } .tab[data-theme="1"] .dot { background: var(--t1); }
+.tab[data-theme="2"] { --dot-color: var(--t2); } .tab[data-theme="2"] .dot { background: var(--t2); }
+.tab[data-theme="3"] { --dot-color: var(--t3); } .tab[data-theme="3"] .dot { background: var(--t3); }
+.tab[data-theme="4"] { --dot-color: var(--t4); } .tab[data-theme="4"] .dot { background: var(--t4); }
+
+.tab[data-theme="1"].active { border-color: rgba(0,245,212,.3); }
+.tab[data-theme="2"].active { border-color: rgba(255,45,120,.3); }
+.tab[data-theme="3"].active { border-color: rgba(0,255,204,.3); }
+.tab[data-theme="4"].active { border-color: rgba(240,192,64,.3); }
+
+/* Key hint badge */
+.kbd-hint {
+  font-family: 'Space Mono', monospace;
+  font-size: .5rem;
+  padding: 1px 5px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 4px;
+  color: rgba(255,255,255,.3);
+  margin-left: 2px;
+}
+
+/* ── KEYBOARD SHORTCUTS ── */
+.shortcuts {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Space Mono', monospace;
+  font-size: .55rem;
+  color: rgba(255,255,255,.2);
+  letter-spacing: .08em;
+}
+.shortcuts kbd {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 20px; height: 18px; padding: 0 5px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 4px;
+  font-family: inherit; font-size: .55rem;
+}
+
+/* ── IFRAME CONTAINER ── */
+#frame-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+#viewer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  transition: opacity .35s ease;
+}
+
+/* ── LOADING ── */
+#loading {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: rgba(3,0,8,.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s;
+}
+#loading.show { opacity: 1; pointer-events: all; }
+
+.loader-ring {
+  width: 40px; height: 40px;
+  border: 2px solid rgba(255,255,255,.1);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loader-name {
+  font-family: 'Space Mono', monospace;
+  font-size: .65rem;
+  color: rgba(255,255,255,.4);
+  letter-spacing: .15em;
+}
+
+/* ── TRANSITION WIPE ── */
+#wipe {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  opacity: 0;
+}
+#wipe.flash {
+  animation: flashWipe .4s ease forwards;
+}
+@keyframes flashWipe {
+  0% { opacity: 0; background: rgba(255,255,255,.04); }
+  30% { opacity: 1; background: rgba(255,255,255,.06); }
+  100% { opacity: 0; }
+}
+
+/* ── BOTTOM INFO BAR ── */
+#infobar {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  background: rgba(0,0,0,.6);
+  border-top: 1px solid rgba(255,255,255,.05);
+  font-family: 'Space Mono', monospace;
+  font-size: .55rem;
+  color: rgba(255,255,255,.2);
+  letter-spacing: .1em;
+  flex-shrink: 0;
+}
+.info-dot {
+  display: inline-block;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  margin-right: 6px;
+  background: currentColor;
+  animation: infoPulse 2s infinite;
+}
+@keyframes infoPulse { 0%,100%{opacity:1;}50%{opacity:.3;} }
+#active-label { transition: color .3s; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .tab .name { display: none; }
+  .kbd-hint { display: none; }
+  .shortcuts { display: none; }
+  #infobar { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="logo">MKA <span>Portfolio</span> // Theme Switcher</div>
+
+  <div class="tabs">
+    <button class="tab active" data-theme="1" data-src="theme1-holographic-crystal.html" data-name="Holographic Crystal" data-color="#00f5d4">
+      <span class="dot"></span>
+      <span class="icon">💎</span>
+      <span class="name">Crystal</span>
+      <span class="kbd-hint">1</span>
+    </button>
+    <button class="tab" data-theme="2" data-src="theme2-synthwave-retrowave.html" data-name="Synthwave Retrowave" data-color="#ff2d78">
+      <span class="dot"></span>
+      <span class="icon">🌆</span>
+      <span class="name">Synthwave</span>
+      <span class="kbd-hint">2</span>
+    </button>
+    <button class="tab" data-theme="3" data-src="theme3-bioluminescent-ocean.html" data-name="Deep Ocean" data-color="#00ffcc">
+      <span class="dot"></span>
+      <span class="icon">🌊</span>
+      <span class="name">Ocean</span>
+      <span class="kbd-hint">3</span>
+    </button>
+    <button class="tab" data-theme="4" data-src="theme4-liquid-gold-luxury.html" data-name="Liquid Gold" data-color="#f0c040">
+      <span class="dot"></span>
+      <span class="icon">🏆</span>
+      <span class="name">Gold</span>
+      <span class="kbd-hint">4</span>
+    </button>
+  </div>
+
+  <div class="shortcuts">
+    <span><kbd>1</kbd>–<kbd>4</kbd> jump</span>
+    <span><kbd>←</kbd><kbd>→</kbd> prev / next</span>
+  </div>
+</div>
+
+<!-- FRAME -->
+<div id="frame-wrap">
+  <iframe id="viewer" src="theme1-holographic-crystal.html"></iframe>
+  <div id="loading">
+    <div class="loader-ring" id="loaderRing"></div>
+    <div class="loader-name" id="loaderName">Loading...</div>
+  </div>
+  <div id="wipe"></div>
+</div>
+
+<!-- BOTTOM INFO -->
+<div id="infobar">
+  <span><span class="info-dot" id="activeDot" style="color:#00f5d4"></span><span id="active-label" style="color:#00f5d4">💎 Holographic Crystal</span></span>
+  <span>Moe Kyaw Aung · Android Developer</span>
+  <span>4 themes available</span>
+</div>
+
+<script>
+const viewer     = document.getElementById('viewer');
+const loading    = document.getElementById('loading');
+const loaderRing = document.getElementById('loaderRing');
+const loaderName = document.getElementById('loaderName');
+const wipe       = document.getElementById('wipe');
+const tabs       = document.querySelectorAll('.tab');
+const activeDot  = document.getElementById('activeDot');
+const activeLabel= document.getElementById('active-label');
+let current = 0;
+let switching = false;
+
+function switchTheme(idx, source) {
+  if (switching || idx === current) return;
+  switching = true;
+
+  const btn = tabs[idx];
+  const src = btn.dataset.src;
+  const name = btn.dataset.name;
+  const color = btn.dataset.color;
+
+  // Update tabs
+  tabs.forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  current = idx;
+
+  // Update bottom info
+  activeDot.style.color = color;
+  activeLabel.style.color = color;
+  activeLabel.textContent = btn.querySelector('.icon').textContent + ' ' + name;
+
+  // Update loader color
+  loaderRing.style.borderTopColor = color;
+  loaderName.textContent = 'Loading ' + name + '...';
+
+  // Flash wipe
+  wipe.classList.remove('flash');
+  void wipe.offsetWidth;
+  wipe.classList.add('flash');
+
+  // Fade out + load
+  viewer.style.opacity = '0';
+  loading.classList.add('show');
+
+  setTimeout(() => {
+    viewer.src = src;
+  }, 180);
+
+  viewer.onload = () => {
+    viewer.style.opacity = '1';
+    loading.classList.remove('show');
+    switching = false;
+  };
+
+  // Safety fallback
+  setTimeout(() => {
+    viewer.style.opacity = '1';
+    loading.classList.remove('show');
+    switching = false;
+  }, 3500);
+}
+
+// Click handlers
+tabs.forEach((btn, i) => {
+  btn.addEventListener('click', () => switchTheme(i, 'click'));
+});
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') switchTheme((current + 1) % tabs.length, 'arrow');
+  if (e.key === 'ArrowLeft')  switchTheme((current - 1 + tabs.length) % tabs.length, 'arrow');
+  if (e.key >= '1' && e.key <= '4') switchTheme(parseInt(e.key) - 1, 'keyboard');
+});
+</script>
+</body>
+</html>
