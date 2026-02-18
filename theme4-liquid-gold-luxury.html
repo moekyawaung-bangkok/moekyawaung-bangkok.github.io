@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MKA — Liquid Gold</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Josefin+Sans:wght@100;300;400;700&family=Lora:ital,wght@1,400;1,600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --g1:#f0c040;--g2:#d4890a;--g3:#ffd700;--g4:#b8860b;--g5:#ffe680;
+  --bg:#0a0804;--mid:#110e08;
+}
+body{background:var(--bg);color:#e8d8a0;font-family:'Josefin Sans',sans-serif;overflow-x:hidden;cursor:none;}
+
+/* CURSOR */
+.gcur{position:fixed;pointer-events:none;z-index:9999;}
+.gc1{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--g1);
+  box-shadow:0 0 15px var(--g1),0 0 30px rgba(240,192,64,.5);
+  transition:left .05s,top .05s;
+}
+.gc2{
+  width:44px;height:44px;border:1px solid rgba(240,192,64,.35);border-radius:50%;
+  transition:left .13s,top .13s;
+}
+
+/* BACKGROUND */
+.gbg{
+  position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 50% 60% at 10% 30%,rgba(212,137,10,.12) 0%,transparent 70%),
+    radial-gradient(ellipse 60% 40% at 90% 70%,rgba(240,192,64,.08) 0%,transparent 70%),
+    radial-gradient(ellipse 40% 50% at 50% 10%,rgba(184,134,11,.08) 0%,transparent 70%),
+    var(--bg);
+}
+/* Gold grain texture */
+.grain{
+  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
+}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:24px 70px;
+  border-bottom:1px solid rgba(240,192,64,.12);
+  background:rgba(10,8,4,.85);backdrop-filter:blur(30px);
+}
+.logo{
+  font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;
+  letter-spacing:.15em;text-transform:uppercase;
+  color:var(--g1);text-shadow:0 0 20px rgba(240,192,64,.4);
+}
+.nav-links{display:flex;gap:40px;list-style:none;}
+.nav-links a{
+  font-family:'Josefin Sans',sans-serif;font-size:.7rem;
+  color:rgba(232,216,160,.35);text-decoration:none;
+  letter-spacing:.2em;text-transform:uppercase;transition:color .3s;
+}
+.nav-links a:hover{color:var(--g1);}
+
+/* HERO */
+.hero{
+  min-height:100vh;display:flex;align-items:center;
+  padding:130px 70px 80px;position:relative;z-index:1;
+}
+.hero-in{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:100px;align-items:center;max-width:1300px;margin:0 auto;width:100%;
+}
+
+/* 3D GOLD DIAMOND SCENE */
+.diamond-scene{
+  display:flex;justify-content:center;align-items:center;
+  min-height:520px;position:relative;perspective:900px;
+}
+.diamond-wrap{
+  position:relative;
+  animation:diamondOrbit 8s ease-in-out infinite;
+}
+@keyframes diamondOrbit{
+  0%{transform:translateY(0) rotateY(0deg) rotateX(5deg);}
+  25%{transform:translateY(-18px) rotateY(90deg) rotateX(8deg);}
+  50%{transform:translateY(-8px) rotateY(180deg) rotateX(5deg);}
+  75%{transform:translateY(-22px) rotateY(270deg) rotateX(3deg);}
+  100%{transform:translateY(0) rotateY(360deg) rotateX(5deg);}
+}
+.diamond{
+  width:200px;height:200px;
+  transform-style:preserve-3d;position:relative;
+}
+/* Octahedron faces */
+.df{
+  position:absolute;width:0;height:0;
+  border-left:100px solid transparent;
+  border-right:100px solid transparent;
+}
+/* Diamond using clip-path for better look */
+.diamond-shape{
+  width:200px;height:200px;
+  position:relative;transform-style:preserve-3d;
+}
+.ds{
+  position:absolute;inset:0;
+  clip-path:polygon(50% 0%,100% 38%,82% 100%,18% 100%,0% 38%);
+  border:1px solid;
+}
+.ds1{background:linear-gradient(135deg,rgba(240,192,64,.3),rgba(212,137,10,.15));border-color:rgba(240,192,64,.6);transform:translateZ(30px);}
+.ds2{background:linear-gradient(135deg,rgba(255,215,0,.2),rgba(184,134,11,.1));border-color:rgba(255,215,0,.4);transform:translateZ(-30px) rotateY(180deg);}
+.ds3{background:linear-gradient(135deg,rgba(255,230,128,.25),rgba(240,192,64,.1));border-color:rgba(255,230,128,.5);transform:rotateY(-60deg) translateZ(30px);}
+.ds4{background:linear-gradient(135deg,rgba(212,137,10,.2),rgba(240,192,64,.15));border-color:rgba(212,137,10,.5);transform:rotateY(60deg) translateZ(30px);}
+.ds5{background:linear-gradient(135deg,rgba(240,192,64,.15),rgba(255,230,128,.08));border-color:rgba(240,192,64,.3);transform:rotateX(60deg) translateZ(30px);}
+.ds6{background:linear-gradient(135deg,rgba(184,134,11,.3),rgba(0,0,0,.2));border-color:rgba(184,134,11,.4);transform:rotateX(-60deg) translateZ(30px);}
+
+/* Gold glow */
+.d-glow{
+  position:absolute;inset:-80px;
+  background:radial-gradient(circle,rgba(240,192,64,.2),rgba(212,137,10,.1),transparent 70%);
+  border-radius:50%;
+  animation:dGlow 4s ease-in-out infinite;pointer-events:none;
+}
+@keyframes dGlow{0%,100%{transform:scale(1);opacity:.8;}50%{transform:scale(1.15);opacity:1;}}
+
+/* Gold ring ornaments */
+.gring{
+  position:absolute;border-radius:50%;border:1px solid;
+  top:50%;left:50%;
+}
+.gr1{width:280px;height:280px;border-color:rgba(240,192,64,.15);transform:translate(-50%,-50%) rotateX(75deg);animation:ringRot 6s linear infinite;}
+.gr2{width:360px;height:360px;border-color:rgba(212,137,10,.1);transform:translate(-50%,-50%) rotateX(60deg) rotateZ(45deg);animation:ringRot 10s linear infinite reverse;}
+.gr3{width:440px;height:440px;border-color:rgba(240,192,64,.07);transform:translate(-50%,-50%) rotateX(70deg) rotateZ(90deg);animation:ringRot 15s linear infinite;}
+@keyframes ringRot{from{transform:translate(-50%,-50%) rotateX(75deg) rotateZ(0deg);}to{transform:translate(-50%,-50%) rotateX(75deg) rotateZ(360deg);}}
+
+/* Avatar in center */
+.d-avatar{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:120px;height:120px;border-radius:50%;
+  overflow:hidden;z-index:10;
+  border:2px solid rgba(240,192,64,.5);
+  box-shadow:0 0 40px rgba(240,192,64,.3),inset 0 0 20px rgba(240,192,64,.1);
+}
+.d-avatar img{width:100%;height:100%;object-fit:cover;filter:sepia(10%) contrast(1.05);}
+
+/* Floating gold particles */
+.gprt{
+  position:absolute;border-radius:50%;
+  background:var(--g1);
+  animation:gPart ease-in-out infinite;
+}
+@keyframes gPart{
+  0%,100%{transform:translateY(0) scale(1);opacity:.6;}
+  50%{transform:translateY(-20px) scale(1.3);opacity:.2;}
+}
+
+/* Data labels */
+.dlabel{
+  position:absolute;
+  background:rgba(10,8,4,.85);border:1px solid rgba(240,192,64,.25);
+  border-radius:8px;padding:10px 18px;
+  font-family:'Josefin Sans',sans-serif;font-size:.7rem;
+  color:var(--g1);letter-spacing:.12em;text-transform:uppercase;
+  backdrop-filter:blur(20px);
+  white-space:nowrap;z-index:20;
+  animation:labelFloat ease-in-out infinite;
+}
+.dl1{top:5%;left:-20px;animation-duration:4s;animation-delay:0s;}
+.dl2{bottom:15%;right:-30px;animation-duration:5s;animation-delay:-2s;color:rgba(232,216,160,.6);border-color:rgba(240,192,64,.15);}
+.dl3{top:45%;left:-60px;animation-duration:3.5s;animation-delay:-1s;}
+@keyframes labelFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+.dl-dot{
+  display:inline-block;width:5px;height:5px;border-radius:50%;
+  background:var(--g1);box-shadow:0 0 8px var(--g1);
+  margin-right:8px;animation:lDot 1.5s infinite;
+}
+@keyframes lDot{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+/* HERO TEXT */
+.hero-txt{animation:goldSlide .9s ease both;}
+@keyframes goldSlide{from{opacity:0;transform:translateX(-30px);}to{opacity:1;transform:translateX(0);}}
+
+.gold-tag{
+  font-family:'Josefin Sans',sans-serif;font-size:.7rem;font-weight:100;
+  color:rgba(240,192,64,.6);letter-spacing:.3em;text-transform:uppercase;
+  margin-bottom:24px;display:flex;align-items:center;gap:16px;
+}
+.gold-tag::before,.gold-tag::after{
+  content:'';flex:1;max-width:40px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(240,192,64,.4));
+}
+.gold-tag::after{transform:scaleX(-1);}
+
+h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(3.5rem,6vw,6rem);
+  font-weight:900;line-height:1;margin-bottom:6px;
+}
+.h1a{color:#fff;}
+.h1b{
+  background:linear-gradient(135deg,var(--g1),var(--g2),var(--g3),var(--g4));
+  background-size:300% 100%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:goldFlow 6s ease-in-out infinite;
+  font-style:italic;
+}
+@keyframes goldFlow{0%,100%{background-position:0%;}50%{background-position:100%;}}
+
+.hero-role{
+  font-family:'Lora',serif;font-style:italic;font-size:.9rem;
+  color:rgba(240,192,64,.6);letter-spacing:.1em;
+  margin:16px 0 20px;
+}
+.hero-desc{
+  font-size:.85rem;color:rgba(232,216,160,.5);
+  line-height:2;max-width:460px;margin-bottom:40px;
+  font-weight:100;letter-spacing:.05em;
+}
+.divider{
+  width:60px;height:1px;margin:24px 0;
+  background:linear-gradient(90deg,var(--g1),transparent);
+}
+.stat-row{display:flex;gap:40px;margin-bottom:40px;}
+.stat-n{
+  font-family:'Playfair Display',serif;font-size:3rem;font-weight:900;font-style:italic;
+  background:linear-gradient(135deg,var(--g1),var(--g2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  line-height:1;
+}
+.stat-l{font-family:'Josefin Sans',sans-serif;font-size:.62rem;font-weight:100;
+color:rgba(232,216,160,.35);letter-spacing:.2em;text-transform:uppercase;margin-top:4px;}
+
+.btn-row{display:flex;gap:16px;}
+.btn{
+  padding:14px 36px;font-family:'Josefin Sans',sans-serif;
+  font-size:.75rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  text-decoration:none;transition:all .4s;position:relative;overflow:hidden;
+}
+.btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);
+  transform:translateX(-100%);transition:transform .6s;
+}
+.btn:hover::before{transform:translateX(100%);}
+.btn-a{
+  background:linear-gradient(135deg,var(--g2),var(--g4));
+  color:#0a0804;
+  box-shadow:0 0 40px rgba(212,137,10,.3);
+}
+.btn-a:hover{box-shadow:0 0 60px rgba(240,192,64,.5);transform:translateY(-2px);}
+.btn-b{
+  background:transparent;color:var(--g1);
+  border:1px solid rgba(240,192,64,.3);
+}
+.btn-b:hover{background:rgba(240,192,64,.06);border-color:rgba(240,192,64,.6);}
+
+/* SECTIONS */
+section.s{position:relative;z-index:1;padding:100px 70px;}
+.sh{display:flex;align-items:center;gap:24px;margin-bottom:60px;max-width:1300px;margin-left:auto;margin-right:auto;}
+.sn{font-family:'Josefin Sans',sans-serif;font-size:.65rem;font-weight:100;color:rgba(240,192,64,.5);letter-spacing:.25em;text-transform:uppercase;}
+.st{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;letter-spacing:-.01em;}
+.sl{flex:1;height:1px;background:linear-gradient(90deg,rgba(240,192,64,.2),transparent);}
+.si{max-width:1300px;margin:0 auto;}
+
+/* SKILLS - GOLD PILLS */
+.skills-g{display:flex;flex-wrap:wrap;gap:12px;}
+.sk{
+  padding:12px 22px;
+  background:rgba(240,192,64,.04);
+  border:1px solid rgba(240,192,64,.15);
+  font-family:'Josefin Sans',sans-serif;font-size:.7rem;font-weight:300;
+  color:rgba(232,216,160,.65);letter-spacing:.1em;text-transform:uppercase;
+  transition:all .4s;cursor:default;
+  position:relative;overflow:hidden;
+}
+.sk::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(240,192,64,.1),transparent);
+  opacity:0;transition:opacity .4s;
+}
+.sk:hover::before{opacity:1;}
+.sk:hover{
+  color:var(--g1);border-color:rgba(240,192,64,.4);
+  box-shadow:0 0 20px rgba(240,192,64,.1);
+  transform:translateY(-3px);
+}
+
+/* CERT CARDS - LUXURY */
+.certs-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;}
+.cert-g{
+  background:rgba(17,14,8,.9);
+  border:1px solid rgba(240,192,64,.1);
+  border-top:2px solid rgba(240,192,64,.3);
+  padding:30px;transition:all .4s;
+  text-decoration:none;color:inherit;display:block;
+  position:relative;overflow:hidden;
+}
+.cert-g::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(240,192,64,.3),transparent);
+  transform:scaleX(0);transition:transform .4s;
+}
+.cert-g:hover::after{transform:scaleX(1);}
+.cert-g:hover{
+  border-top-color:var(--g1);
+  background:rgba(25,20,10,.95);
+  box-shadow:0 20px 60px rgba(240,192,64,.06);
+  transform:translateY(-4px);
+}
+.cert-cat{
+  font-family:'Josefin Sans',sans-serif;font-size:.62rem;font-weight:100;
+  color:rgba(240,192,64,.5);letter-spacing:.25em;text-transform:uppercase;margin-bottom:12px;
+}
+.cert-nm{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:4px;}
+.cert-is{font-family:'Josefin Sans',sans-serif;font-size:.62rem;font-weight:100;color:rgba(232,216,160,.3);letter-spacing:.1em;}
+.cert-arr{position:absolute;bottom:20px;right:20px;color:rgba(240,192,64,.25);font-size:1rem;transition:all .3s;}
+.cert-g:hover .cert-arr{color:var(--g1);transform:translate(2px,-2px);}
+
+/* SOCIAL */
+.soc-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;}
+.sg{
+  display:flex;align-items:center;gap:14px;
+  background:rgba(17,14,8,.8);border:1px solid rgba(240,192,64,.1);
+  padding:18px;text-decoration:none;color:#fff;transition:all .4s;
+}
+.sg:hover{
+  border-color:rgba(240,192,64,.3);
+  box-shadow:0 10px 30px rgba(240,192,64,.05);
+  transform:translateY(-3px);
+}
+.sg-ico{
+  width:44px;height:44px;display:flex;align-items:center;
+  justify-content:center;font-size:1.1rem;flex-shrink:0;
+  border:1px solid rgba(240,192,64,.15);background:rgba(240,192,64,.05);
+}
+.sg-nm{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;}
+.sg-hd{font-family:'Josefin Sans',sans-serif;font-size:.6rem;font-weight:100;color:rgba(232,216,160,.3);letter-spacing:.07em;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:110px;}
+
+/* CTA */
+.cta-g{
+  max-width:900px;margin:0 auto;text-align:center;
+  border:1px solid rgba(240,192,64,.15);
+  padding:80px 60px;
+  background:radial-gradient(ellipse at 50% 0%,rgba(240,192,64,.06),transparent 60%),rgba(17,14,8,.9);
+  position:relative;overflow:hidden;
+}
+.cta-g::before,.cta-g::after{
+  content:'✦';position:absolute;
+  font-size:4rem;color:rgba(240,192,64,.1);
+  font-family:'Playfair Display',serif;
+}
+.cta-g::before{top:-20px;left:20px;}
+.cta-g::after{bottom:-20px;right:20px;}
+.cta-g h2{font-family:'Playfair Display',serif;font-size:3rem;font-weight:900;color:#fff;margin-bottom:16px;font-style:italic;}
+.cta-g p{font-family:'Josefin Sans',sans-serif;font-size:.75rem;font-weight:100;color:rgba(232,216,160,.4);letter-spacing:.15em;text-transform:uppercase;margin-bottom:40px;}
+.cta-btns{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;}
+
+footer{
+  text-align:center;padding:28px;
+  border-top:1px solid rgba(240,192,64,.08);
+  font-family:'Josefin Sans',sans-serif;font-size:.65rem;font-weight:100;
+  color:rgba(232,216,160,.2);letter-spacing:.2em;text-transform:uppercase;
+  position:relative;z-index:1;
+}
+
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.on{opacity:1;transform:none;}
+
+@media(max-width:768px){
+  .hero-in{grid-template-columns:1fr;gap:60px;}
+  nav{padding:16px 20px;}.nav-links{display:none;}
+  section.s{padding:80px 20px;}
+  .hero{padding:100px 20px 60px;}
+  .cta-g{padding:40px 24px;}
+}
+</style>
+</head>
+<body>
+<div class="gcur gc1" id="gc1" style="position:fixed;pointer-events:none;z-index:9999;"></div>
+<div class="gcur gc2" id="gc2" style="position:fixed;pointer-events:none;z-index:9998;"></div>
+
+<div class="gbg"></div>
+<div class="grain"></div>
+
+<nav>
+  <div class="logo">Moe Kyaw Aung</div>
+  <ul class="nav-links">
+    <li><a href="#skills">Stack</a></li>
+    <li><a href="#certs">Certifications</a></li>
+    <li><a href="#connect">Connect</a></li>
+    <li><a href="mailto:moekyawaung@fastmail.com">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-in">
+    <div class="hero-txt">
+      <div class="gold-tag">Android Developer</div>
+      <h1>
+        <div class="h1a">Moe Kyaw</div>
+        <div class="h1b">Aung</div>
+      </h1>
+      <div class="hero-role">Kotlin · Jetpack · Firebase · Tachileik, Myanmar</div>
+      <div class="divider"></div>
+      <p class="hero-desc">Crafting mobile experiences with precision and elegance. Two years building apps that users love — from seamless UI to robust backend integrations.</p>
+      <div class="stat-row">
+        <div><div class="stat-n">2+</div><div class="stat-l">Years</div></div>
+        <div><div class="stat-n">40+</div><div class="stat-l">Certified</div></div>
+        <div><div class="stat-n">15+</div><div class="stat-l">Skills</div></div>
+      </div>
+      <div class="btn-row">
+        <a href="https://github.com/Moekyawaung" target="_blank" class="btn btn-a">View GitHub →</a>
+        <a href="mailto:moekyawaung@fastmail.com" class="btn btn-b">Get In Touch</a>
+      </div>
+    </div>
+
+    <div class="diamond-scene">
+      <div class="gring gr1"></div>
+      <div class="gring gr2"></div>
+      <div class="gring gr3"></div>
+      <div class="d-glow"></div>
+      <!-- Gold particles -->
+      <div class="gprt" style="width:5px;height:5px;top:15%;left:15%;box-shadow:0 0 10px var(--g1);animation-duration:3s;animation-delay:0s;opacity:.4;"></div>
+      <div class="gprt" style="width:3px;height:3px;top:70%;right:20%;box-shadow:0 0 8px var(--g1);animation-duration:4s;animation-delay:-1s;opacity:.3;"></div>
+      <div class="gprt" style="width:4px;height:4px;top:40%;left:5%;box-shadow:0 0 12px var(--g3);background:var(--g3);animation-duration:5s;animation-delay:-2s;opacity:.35;"></div>
+      <div class="gprt" style="width:6px;height:6px;bottom:25%;right:10%;box-shadow:0 0 10px var(--g2);background:var(--g2);animation-duration:3.5s;animation-delay:-.5s;opacity:.4;"></div>
+      <div class="gprt" style="width:2px;height:2px;top:55%;right:30%;box-shadow:0 0 8px var(--g1);animation-duration:6s;animation-delay:-3s;opacity:.5;"></div>
+      <div class="diamond-wrap">
+        <div class="diamond-shape">
+          <div class="ds ds1"></div>
+          <div class="ds ds2"></div>
+          <div class="ds ds3"></div>
+          <div class="ds ds4"></div>
+          <div class="ds ds5"></div>
+          <div class="ds ds6"></div>
+        </div>
+      </div>
+      <div class="d-avatar"><img src="https://0.gravatar.com/avatar/a2dae9a29fbf7c72552047efc744be54a018938aacd9009e7500f93d72eb0f2e?size=256" alt="MKA"></div>
+      <div class="dlabel dl1"><span class="dl-dot"></span>Kotlin Developer</div>
+      <div class="dlabel dl2"><span class="dl-dot" style="background:rgba(240,192,64,.5);box-shadow:0 0 8px rgba(240,192,64,.5);"></span>40+ Certificates</div>
+      <div class="dlabel dl3"><span class="dl-dot" style="background:var(--g3);box-shadow:0 0 8px var(--g3);"></span>GMT+07 · Myanmar</div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section class="s" id="skills">
+  <div class="si">
+    <div class="sh reveal"><span class="sn">01</span><h2 class="st">Tech Stack</h2><div class="sl"></div></div>
+    <div class="skills-g">
+      <div class="sk">🟢 Kotlin</div><div class="sk">🤖 Android SDK</div><div class="sk">🔥 Firebase</div>
+      <div class="sk">🧩 Jetpack Compose</div><div class="sk">⚛️ React</div><div class="sk">🐦 Flutter</div>
+      <div class="sk">🍎 Swift / iOS</div><div class="sk">🐍 Python</div><div class="sk">☕ Java</div>
+      <div class="sk">🕸️ JavaScript</div><div class="sk">☁️ AWS Cloud</div><div class="sk">🔐 Cyber Security</div>
+      <div class="sk">🧠 Machine Learning</div><div class="sk">📦 Git & DevOps</div><div class="sk">🐧 Linux</div>
+      <div class="sk">🔑 Cryptography</div><div class="sk">📡 IoT</div><div class="sk">📊 Big Data Analytics</div>
+    </div>
+  </div>
+</section>
+
+<!-- CERTS -->
+<section class="s" id="certs" style="background:rgba(255,255,255,.01);">
+  <div class="si">
+    <div class="sh reveal"><span class="sn">02</span><h2 class="st">Certifications</h2><div class="sl"></div></div>
+    <div class="certs-g">
+      <a href="https://storage.googleapis.com/programminghub/certificate%2F1739833075958.jpg" target="_blank" class="cert-g reveal"><div class="cert-cat">Mobile Development</div><div class="cert-nm">Kotlin for Android</div><div class="cert-is">Google Developers Launchpad</div><span class="cert-arr">↗</span></a>
+      <a href="https://storage.googleapis.com/programminghub/certificate%2F1739832041295.jpg" target="_blank" class="cert-g reveal"><div class="cert-cat">Backend Services</div><div class="cert-nm">Firebase</div><div class="cert-is">Google Developers Launchpad</div><span class="cert-arr">↗</span></a>
+      <a href="https://storage.googleapis.com/programminghub/certificate%2F1739898444003.jpg" target="_blank" class="cert-g reveal"><div class="cert-cat">Artificial Intelligence</div><div class="cert-nm">Machine Learning</div><div class="cert-is">Google Developers Launchpad</div><span class="cert-arr">↗</span></a>
+      <a href="https://storage.googleapis.com/programminghub/certificate%2F1739872038601.jpg" target="_blank" class="cert-g reveal"><div class="cert-cat">Artificial Intelligence</div><div class="cert-nm">Artificial Intelligence</div><div class="cert-is">Google Developers Launchpad</div><span class="cert-arr">↗</span></a>
+      <a href="https://storage.googleapis.com/programminghub/certificate%2F1719559807330.jpg" target="_blank" class="cert-g reveal"><div class="cert-cat">Security</div><div class="cert-nm">Cyber Security</div><div class="cert-is">Google Developers Launchpad</div><span class="cert-arr">↗</span></a>
+      <a href="https://storage.googleapis.com/programminghub/certificate%2F1739837560681.jpg" target="_blank" class="cert-g reveal"><div class="cert-cat">Security</div><div class="cert-nm">Ethical Hacking</div><div class="cert-is">Google Developers Launchpad</div><span class="cert-arr">↗</span></a>
+      <a href="https://storage.googleapis.com/programminghub/certificate%2F1739872219283.jpg" target="_blank" class="cert-g reveal"><div class="cert-cat">Cloud Computing</div><div class="cert-nm">AWS Cloud Computing</div><div class="cert-is">Google Developers Launchpad</div><span class="cert-arr">↗</span></a>
+      <a href="https://storage.googleapis.com/programminghub/certificate%2F1739833967447.jpg" target="_blank" class="cert-g reveal"><div class="cert-cat">Mobile Development</div><div class="cert-nm">Flutter</div><div class="cert-is">Google Developers Launchpad</div><span class="cert-arr">↗</span></a>
+      <a href="https://storage.googleapis.com/programminghub/certificate%2F1739836044174.jpg" target="_blank" class="cert-g reveal"><div class="cert-cat">Web Development</div><div class="cert-nm">React Development</div><div class="cert-is">Google Developers Launchpad</div><span class="cert-arr">↗</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL -->
+<section class="s" id="connect">
+  <div class="si">
+    <div class="sh reveal"><span class="sn">03</span><h2 class="st">Find Me Online</h2><div class="sl"></div></div>
+    <div class="soc-g">
+      <a href="https://github.com/Moekyawaung" target="_blank" class="sg reveal"><div class="sg-ico">🐙</div><div><div class="sg-nm">GitHub</div><div class="sg-hd">Moekyawaung</div></div></a>
+      <a href="https://www.linkedin.com/in/moe-kyaw-aung-2653093a1" target="_blank" class="sg reveal"><div class="sg-ico">💼</div><div><div class="sg-nm">LinkedIn</div><div class="sg-hd">moe-kyaw-aung</div></div></a>
+      <a href="https://bsky.app/profile/moekyawaung96.bsky.social" target="_blank" class="sg reveal"><div class="sg-ico">🦋</div><div><div class="sg-nm">Bluesky</div><div class="sg-hd">moekyawaung96</div></div></a>
+      <a href="https://tiktok.com/@moelay262411" target="_blank" class="sg reveal"><div class="sg-ico">🎵</div><div><div class="sg-nm">TikTok</div><div class="sg-hd">@moelay262411</div></div></a>
+      <a href="https://www.youtube.com/channel/UCdGC3lLlIPnb2VIL_qS65OQ" target="_blank" class="sg reveal"><div class="sg-ico">▶️</div><div><div class="sg-nm">YouTube</div><div class="sg-hd">Channel</div></div></a>
+      <a href="https://www.pinterest.com/moekyawaung13721" target="_blank" class="sg reveal"><div class="sg-ico">📌</div><div><div class="sg-nm">Pinterest</div><div class="sg-hd">moekyawaung13721</div></div></a>
+      <a href="https://www.tumblr.com/moekyawaung" target="_blank" class="sg reveal"><div class="sg-ico">📝</div><div><div class="sg-nm">Tumblr</div><div class="sg-hd">moekyawaung</div></div></a>
+      <a href="https://gravatar.com/moekyawaung2026" target="_blank" class="sg reveal"><div class="sg-ico">🌐</div><div><div class="sg-nm">Gravatar</div><div class="sg-hd">moekyawaung2026</div></div></a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="s">
+  <div class="si">
+    <div class="cta-g reveal">
+      <h2>Let's Create Together</h2>
+      <p>Android Developer · Tachileik, Myanmar · GMT+07:00 · Available for Hire</p>
+      <div class="cta-btns">
+        <a href="mailto:moekyawaung@fastmail.com" class="btn btn-a">📧 moekyawaung@fastmail.com</a>
+        <a href="tel:+959666000050" class="btn btn-b">📞 +95 9 666 000 050</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>© 2026 · Moe Kyaw Aung · Android Developer · Tachileik, Myanmar</footer>
+
+<script>
+// Cursor
+const gc1=document.getElementById('gc1'),gc2=document.getElementById('gc2');
+document.addEventListener('mousemove',e=>{
+  gc1.style.left=e.clientX-5+'px';gc1.style.top=e.clientY-5+'px';
+  setTimeout(()=>{gc2.style.left=e.clientX-22+'px';gc2.style.top=e.clientY-22+'px';},90);
+});
+
+// Reveal
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on');}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// 3D tilt on cert cards
+document.querySelectorAll('.cert-g').forEach(el=>{
+  el.addEventListener('mousemove',e=>{
+    const r=el.getBoundingClientRect();
+    const x=((e.clientX-r.left)/r.width-.5)*10;
+    const y=((e.clientY-r.top)/r.height-.5)*-10;
+    el.style.transform=`translateY(-4px) perspective(400px) rotateX(${y}deg) rotateY(${x}deg)`;
+  });
+  el.addEventListener('mouseleave',()=>el.style.transform='');
+});
+</script>
+</body>
+</html>
